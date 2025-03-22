@@ -1,0 +1,44 @@
+@startuml C4_Context
+!include <C4/C4_Context>
+
+Boundary(businessDomain, "Домен «Бизнес-аналитика»") {
+    System(portal, "Портал самообслуживания")
+    System(dataMart, "Витрины данных")
+}
+
+Boundary(medicalDomain, "Домен «Медицинские сервисы»") {
+    System(clinicInterface, "Клинический интерфейс оператора")
+}
+
+Boundary(aiDomain, "ИИ-домен") {
+    System(aiServices, "ИИ-сервисы (ML-модели и аналитика)")
+    System(aiStorage, "Хранилище обработанных данных (AI)")
+}
+
+Boundary(fintechDomain, "Домен «Финансовые сервисы»") {
+    System(fintechServices, "Финтех-сервисы")
+}
+
+Boundary(integrationDomain, "Домен «Интеграция и хранение данных»") {
+    System(dataLake, "Data Lake")
+    System(storage, "Хранилище данных (DWH)")
+    System(integrationLayer, "Интеграционная шина")
+    System(etl, "ETL-процессы")
+}
+
+Rel(portal, dataMart, "Получает данные для аналитики")
+Rel(dataMart, etl, "Заполняется через")
+Rel(etl, storage, "Работает с данными в")
+Rel(etl, dataLake, "Работает с данными в")
+
+Rel(clinicInterface, integrationLayer, "Отправляет мед. данные")
+Rel(integrationLayer, dataLake, "Сохраняет данные в")
+Rel(integrationLayer, storage, "Сохраняет данные в")
+Rel(integrationLayer, aiServices, "Передача мед. данных")
+
+Rel(aiServices, aiStorage, "Сохраняет обработанные данные")
+Rel(aiServices, integrationLayer, "Возвращает обработанные данные")
+
+Rel(fintechServices, integrationLayer, "Передаёт финансовые данные")
+
+@enduml

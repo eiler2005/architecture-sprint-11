@@ -1,0 +1,44 @@
+@startuml
+
+' Внешние источники и получатели данных
+entity "Бизнес-пользователь" as BusinessUser
+entity "Оператор клиники" as ClinicOperator
+entity "Финансовые партнёры" as FinPartners
+
+' Процессы
+rectangle "Портал самообслуживания" as SelfServicePortal
+rectangle "Формирование витрин данных" as DataMartProcess
+rectangle "ИИ-обработка данных" as AIProcessing
+rectangle "Финансовые операции" as FinProcessing
+rectangle "Интеграция данных" as DataIntegration
+rectangle "ETL-процессы" as ETLProcess
+
+' Хранилища данных
+Database "DWH (Центральное хранилище)" as CentralStorage
+Database "Data Lake" as DataLake
+Database "AI-хранилище" as AIStorage
+Database "Витрины данных" as DataMarts
+
+' Потоки данных
+BusinessUser --> SelfServicePortal : запрос отчёта
+SelfServicePortal --> DataMarts : запрос данных
+DataMarts --> SelfServicePortal : отчёт
+
+ClinicOperator --> DataIntegration : ввод медицинских данных
+DataIntegration --> DataLake : передача медицинских данных
+DataIntegration --> CentralStorage : передача медицинских данных
+
+DataLake --> ETLProcess : данные для обработки
+ETLProcess --> CentralStorage : обработанные данные
+ETLProcess --> DataMarts : обработанные данные для витрин
+
+DataIntegration --> AIProcessing : данные для ML-анализа
+AIProcessing --> AIStorage : сохранение результатов анализа
+AIProcessing --> DataIntegration : возврат результатов анализа
+DataIntegration --> ClinicOperator : обработанные результаты
+
+FinPartners --> FinProcessing : финансовые транзакции
+FinProcessing --> DataIntegration : обработанные финансовые данные
+DataIntegration --> DataLake : финансовые данные
+DataIntegration --> CentralStorage : финансовые данные
+@enduml

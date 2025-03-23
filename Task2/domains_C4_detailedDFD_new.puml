@@ -1,0 +1,41 @@
+@startuml
+!include <C4/C4_Context>
+
+Person(BusinessUser, "Бизнес-пользователь")
+Person(ClinicOperator, "Оператор клиники")
+Person(FinPartners, "Финансовые партнёры")
+
+System(SelfServicePortal, "Портал самообслуживания")
+System(DataMartProcess, "Формирование витрин данных")
+System(AIProcessing, "ИИ-обработка данных")
+System(FinProcessing, "Финансовые операции")
+System(DataIntegration, "Интеграция данных")
+System(ETLProcess, "ETL-процессы")
+
+SystemDb(CentralStorage, "DWH (Центральное хранилище)")
+SystemDb(DataLake, "Data Lake")
+SystemDb(AIStorage, "AI-хранилище")
+SystemDb(DataMarts, "Витрины данных")
+
+Rel(BusinessUser, SelfServicePortal, "Запрос отчёта")
+Rel(SelfServicePortal, DataMarts, "Запрос данных")
+Rel(DataMarts, SelfServicePortal, "Отчёт")
+
+Rel(ClinicOperator, DataIntegration, "Ввод медицинских данных")
+Rel(DataIntegration, DataLake, "Передача медицинских данных")
+Rel(DataIntegration, CentralStorage, "Передача медицинских данных")
+
+Rel(DataLake, ETLProcess, "Данные для обработки")
+Rel(ETLProcess, CentralStorage, "Обработанные данные")
+Rel(ETLProcess, DataMarts, "Данные для витрин")
+
+Rel(DataIntegration, AIProcessing, "Данные для ML-анализа")
+Rel(AIProcessing, AIStorage, "Результаты анализа")
+Rel(AIProcessing, DataIntegration, "Возврат результатов анализа")
+Rel(DataIntegration, ClinicOperator, "Обработанные результаты")
+
+Rel(FinPartners, FinProcessing, "Финансовые транзакции")
+Rel(FinProcessing, DataIntegration, "Финансовые данные")
+Rel(DataIntegration, DataLake, "Финансовые данные")
+Rel(DataIntegration, CentralStorage, "Финансовые данные")
+@enduml

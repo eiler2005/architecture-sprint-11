@@ -1,0 +1,48 @@
+@startuml C4_Containers
+!include <C4/C4_Container>
+
+Person(businessUser, "Бизнес-пользователь", "Формирует отчёты и работает с данными через портал самообслуживания")
+Person(operator, "Оператор клиники", "Ввод и просмотр медицинских данных")
+
+System_Boundary(future20, "Архитектура системы «Будущее 2.0» через год") {
+
+    Container(portal, "Портал самообслуживания", "React, Node.js", "Создание отчётов и аналитика для бизнеса")
+
+    Container_Boundary(dwhNew, "Data Warehouse (новый)") {
+        Container(storage, "Хранилище данных", "PostgreSQL, Hadoop")
+        Container(dataLake, "Data Lake", "S3, HDFS")
+        Container(etl, "ETL-процессы", "Apache Airflow")
+        Container(dataMart, "Витрины данных", "PostgreSQL, ClickHouse", "Специализированные данные для отчётов и аналитики")
+    }
+
+    Container(microservices, "Слой микросервисов бизнес-логики", "Java, Spring Boot")
+
+    Container(apiGateway, "API Gateway", "Kong")
+
+    Container(aiServices, "ИИ-сервисы", "Python, TensorFlow", "Анализ медицинских данных и диагностика")
+    Container(fintechServices, "Финтех-сервисы", "Java, Golang", "Финансовые операции")
+
+    Container(integrationLayer, "Интеграционная шина", "Apache Kafka")
+}
+
+Rel(businessUser, portal, "Использует", "HTTPS")
+Rel(operator, apiGateway, "Использует", "HTTPS")
+
+Rel(portal, microservices, "REST API")
+Rel(microservices, dataMart, "Запросы к витринам данных")
+Rel(microservices, storage, "Чтение/запись")
+
+Rel(etl, dataLake, "Загрузка и обработка данных")
+Rel(etl, storage, "Загрузка и обновление данных")
+Rel(etl, dataMart, "Формирование витрин данных")
+
+Rel(apiGateway, microservices, "REST API")
+Rel(apiGateway, aiServices, "REST API")
+Rel(apiGateway, fintechServices, "REST API")
+
+Rel(aiServices, dataLake, "Чтение медицинских данных")
+Rel(fintechServices, integrationLayer, "Отправка финансовых данных")
+Rel(integrationLayer, dataLake, "Запись данных")
+Rel(integrationLayer, storage, "Запись данных")
+
+@enduml
